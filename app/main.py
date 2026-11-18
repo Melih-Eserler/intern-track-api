@@ -1,6 +1,6 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 
-from app.models import Application, ApplicationCreate
+from app.models import Application, ApplicationCreate, StatusUpdate
 
 app= FastAPI(
     title="InternTrack API",
@@ -29,3 +29,11 @@ def create_application(data: ApplicationCreate):
 @app.get("/applications", response_model=list[Application])
 def list_applications():
     return applications
+
+@app.patch("/applications/{application_id}/status", response_model=Application)
+def update_status(application_id: int, data: StatusUpdate):
+    for application in applications:
+        if application.id== application_id:
+            application.status= data.status
+            return application
+    raise HTTPException(status_code=404, detail="Başvuru bulunamadı")
