@@ -4,9 +4,15 @@ from fastapi import FastAPI, HTTPException
 
 from app.models import Application, ApplicationCreate, Status, StatusUpdate
 
+from pathlib import Path
+
+from fastapi.responses import FileResponse
+
+STATIC_DIR= Path(__file__).resolve().parent.parent / "static"
+
 app= FastAPI(
     title="InternTrack API",
-    description="Staj ve iş başvurularını takip eden hafif REST API",
+    description="Staj ve iş başvurularını takip eden REST API",
     version="0.1.0",
 )
 
@@ -15,8 +21,13 @@ applications: list[Application]= []
 next_id= 1
 
 
-@app.get("/")
-def root():
+@app.get("/", include_in_schema=False)
+def index():
+    return FileResponse(STATIC_DIR / "index.html")
+
+
+@app.get("/health")
+def health():
     return {"message": "InternTrack API çalışıyor"}
 
 
