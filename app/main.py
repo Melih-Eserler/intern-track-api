@@ -1,6 +1,8 @@
+from typing import Optional
+
 from fastapi import FastAPI, HTTPException
 
-from app.models import Application, ApplicationCreate, StatusUpdate
+from app.models import Application, ApplicationCreate, Status, StatusUpdate
 
 app= FastAPI(
     title="InternTrack API",
@@ -27,8 +29,10 @@ def create_application(data: ApplicationCreate):
     return new_application
 
 @app.get("/applications", response_model=list[Application])
-def list_applications():
-    return applications
+def list_applications(status: Optional[Status]= None):
+    if status is None:
+        return applications
+    return [a for a in applications if a.status== status]
 
 @app.patch("/applications/{application_id}/status", response_model=Application)
 def update_status(application_id: int, data: StatusUpdate):
